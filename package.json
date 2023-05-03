@@ -4,10 +4,9 @@
 	"description": "",
 	"main": "app.js",
 	"scripts": {
-		"start": "node app.js",
-		"dev": "nodemon app.js",
-		"create-env": "cat sample.env > .env",
-		"build": "./node_modules/.bin/nodemon app.js"
+		"build": "netlify-lambda build netlify-functions",
+		"start": "netlify-lambda serve netlify-functions",
+		"deploy": "npm run build && netlify deploy --prod"
 	},
 	"keywords": [],
 	"author": "",
@@ -25,6 +24,7 @@
 		"http-status-codes": "^2.1.4",
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^6.0.13",
+		"netlify-lambda": "^2.0.16",
 		"nodemon": "^2.0.15",
 		"socket.io": "^4.4.0",
 		"xss-clean": "^0.1.1"
