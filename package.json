@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node app.js",
 		"dev": "nodemon app.js",
-		"create-env": "cat sample.env > .env"
+		"create-env": "cat sample.env > .env",
+		"build": "./node_modules/.bin/nodemon app.js"
 	},
 	"keywords": [],
 	"author": "",
