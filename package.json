@@ -4,8 +4,8 @@
 	"description": "",
 	"main": "app.js",
 	"scripts": {
-		"build": "netlify-lambda build netlify-functions",
-		"start": "netlify-lambda serve netlify-functions",
+		"build": "netlify-lambda build netlify/functions/api-thechefe",
+		"start": "netlify-lambda serve netlify/functions/api-thechefe",
 		"deploy": "npm run build && netlify deploy --prod"
 	},
 	"keywords": [],
