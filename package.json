@@ -4,9 +4,8 @@
 	"description": "",
 	"main": "app.js",
 	"scripts": {
-		"build": "netlify-lambda build netlify/functions/api-thechefe",
-		"start": "netlify-lambda serve netlify/functions/api-thechefe",
-		"deploy": "npm run build && netlify deploy --prod"
+		"build": "nodemon app.js",
+		"start": "nodemon app.js"
 	},
 	"keywords": [],
 	"author": "",
