@@ -8,6 +8,7 @@ const PostSchema = new mongoose.Schema(
     location: {
       type: String,
     },
+    //to do : milan - from request get all other data
     image: {
       src: {
         type: String,
