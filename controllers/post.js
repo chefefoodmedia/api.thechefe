@@ -8,8 +8,10 @@ const uploadImage = require("../utils/uploadImage");
 const options = { new: true, runValidators: true };
 
 const createPost = async (req, res) => {
-  //to do : milan - from request get all other data
-  const { caption, location } = req.body;
+  //Start to do : milan - from request get all other data
+  const { caption, location , ingredients,isDonate,amount,availableDateTime,expireDateTime} = req.body;
+  //End to do : milan - from request get all other data
+
   const { id } = req.user;
   let image = req.files?.image || "";
   if (!caption && !image)
@@ -23,11 +25,18 @@ const createPost = async (req, res) => {
     caption,
     image,
     location,
-    //to do : milan - from request get all other data
+    // Start to do : milan - from request get all other data
+    ingredients,
+    isDonate,
+    amount,
+    availableDateTime,
+    expireDateTime,
+    //End to do : milan - from request get all other data
     createdBy: id,
     userDetails: { name: user.name, image: user.profileImage },
   });
   res.status(StatusCodes.CREATED).json({ post });
+  console.log(post);
 };
 
 const getPosts = async (req, res) => {
