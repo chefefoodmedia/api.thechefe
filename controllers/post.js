@@ -8,7 +8,20 @@ const uploadImage = require("../utils/uploadImage");
 const options = { new: true, runValidators: true };
 
 const createPost = async (req, res) => {
-  const { caption, location } = req.body;
+  //Start to do : milan - from request get all other data
+  const {
+    caption,
+    location,
+    ingredients,
+    isDonate,
+    amount,
+    availableDateTime,
+    expireDateTime,
+    diatryPreferences,
+    categories,
+  } = req.body;
+  //End to do : milan - from request get all other data
+
   const { id } = req.user;
   let image = req.files?.image || "";
   if (!caption && !image)
@@ -22,10 +35,18 @@ const createPost = async (req, res) => {
     caption,
     image,
     location,
+    ingredients,
+    isDonate,
+    amount,
+    availableDateTime,
+    expireDateTime,
+    diatryPreferences,
+    categories,
     createdBy: id,
     userDetails: { name: user.name, image: user.profileImage },
   });
   res.status(StatusCodes.CREATED).json({ post });
+  console.log(post);
 };
 
 const getPosts = async (req, res) => {
@@ -153,7 +174,17 @@ const deletePost = async (req, res) => {
 };
 
 const updatePost = async (req, res) => {
-  const { caption } = req.body;
+  const {
+    caption,
+    location,
+    ingredients,
+    isDonate,
+    amount,
+    availableDateTime,
+    expireDateTime,
+    diatryPreferences,
+    categories,
+  } = req.body;
   const { id } = req.params;
   const { id: createdBy } = req.user;
   let image = req.files?.image || "";
@@ -167,7 +198,17 @@ const updatePost = async (req, res) => {
       image &&
       (await cloudinary.uploader.destroy(post.image.publicID));
   }
-  const updatedData = { caption };
+  const updatedData = {
+    caption,
+    location,
+    ingredients,
+    isDonate,
+    amount,
+    availableDateTime,
+    expireDateTime,
+    diatryPreferences,
+    categories,
+  };
   if (image) updatedData.image = image;
   const post = await Post.findOneAndUpdate(
     { _id: id, createdBy },
