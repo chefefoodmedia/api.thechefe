@@ -9,24 +9,23 @@ const PostSchema = new mongoose.Schema(
       type: String,
     },
     //start to do : milan - from request get all other data
-    ingredients:{
+    ingredients: {
       type: String,
     },
-    isDonate:{
-      type:Boolean,
+    isDonate: {
+      type: Boolean,
     },
-    amount:{
-      type:Number,
+    amount: {
+      type: Number,
     },
-    availableDateTime:{
+    availableDateTime: {
       type: Date,
     },
-    expireDateTime:{
+    expireDateTime: {
       type: Date,
     },
-
-    //end to do : milan - from request get all other data
-
+    categories: [String],
+    diatryPreferences: [String],
     image: {
       src: {
         type: String,
