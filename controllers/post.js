@@ -59,7 +59,18 @@ const getPosts = async (req, res) => {
     const limitCount = query ? Infinity : 10;
     const skipCount = (+page - 1) * limitCount;
     const _query = {};
-    if (query) _query.caption = new RegExp(query, "i");
+    //find query in caption or location or ingredients or categories or diatryPreferences and if query is donate then find isDonate is true
+    if (query) {
+      _query.$or = [
+        { caption: { $regex: query, $options: "i" } },
+        { location: { $regex: query, $options: "i" } },
+        { ingredients: { $regex: query, $options: "i" } },
+        { categories: { $regex: query, $options: "i" } },
+        { diatryPreferences: { $regex: query, $options: "i" } },
+        { isDonate: query === "donate" ? true : false },
+      ];
+    }
+
     if (userId) _query.createdBy = userId;
     const posts = await Post.find(_query)
       .sort("-createdAt")
