@@ -37,6 +37,7 @@ const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
 const chatRouter = require("./routes/chat");
 const messageRouter = require("./routes/message");
+const foodRequestRouter = require("./routes/requestFood");
 
 //middle wares
 
@@ -96,6 +97,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/chats", authorizationMiddleware, chatRouter);
 app.use("/api/v1/messages", authorizationMiddleware, messageRouter);
+app.use("/api/v1/foodRequest", authorizationMiddleware, foodRequestRouter);
 
 app.use(errorHandlerMiddleware);
 app.use(notFoundMiddleware);

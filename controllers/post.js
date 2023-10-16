@@ -69,6 +69,13 @@ const getPosts = async (req, res) => {
   }
 };
 
+const getPost = async (req, res) => {
+  const { id } = req.params;
+  const post = await Post.findById(id);
+  if (!post) throw new NotFoundError(`No post with id${id}`);
+  res.status(StatusCodes.OK).json({ post });
+};
+
 const likePost = async (req, res) => {
   const { add, id } = req.body;
   const { id: userId } = req.user;
@@ -221,6 +228,7 @@ const updatePost = async (req, res) => {
 module.exports = {
   createPost,
   getPosts,
+  getPost,
   likePost,
   commentPost,
   deletePost,
