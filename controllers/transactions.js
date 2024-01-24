@@ -1,19 +1,11 @@
 const { BadRequestError, NotFoundError } = require("../errors");
-const paypal = require("@paypal/payouts-sdk");
 const { StatusCodes } = require("http-status-codes");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const RequestFood = require("../models/RequestFood");
 const Transaction = require("../models/Transaction");
 
-const clientId = process.env.PAYPAL_CLIENT_ID;
-const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
-// Creating an environment if we want to use sandbox or live based on the client id and secret
-const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
-const client = new paypal.core.PayPalHttpClient(environment);
 
 const options = { new: true, runValidators: true };
 
@@ -41,14 +33,6 @@ const createTransaction = async (req, res) => {
     createdBy: id,
     postOwner: post.createdBy,
     transactionResponse: transactionResponse,
-  });
-
-  //create payout request to bank account using stripe
-  const payout = await stripe.payouts.create({
-    amount: (post.amount - 2) * 100,
-    currency: "eur",
-    method: "instant",
-    destination: "acct_1ObkbjHGJ2z9a2vj",
   });
 
   res.status(StatusCodes.CREATED).json({ transaction });
@@ -81,6 +65,13 @@ const createPaymentIntent = async (req, res) => {
     amount: requestPost.amount * 100,
     currency: "eur",
     customer: customer.id,
+    automatic_payment_methods: {
+      enabled: true,
+    },
+    application_fee_amount: 200,
+    transfer_data: {
+      destination: 'acct_1Oc05uQepn2e0Z9W',
+    },
     description:
       "Food request payment for " +
       requestPost.userDetails.name +
@@ -103,8 +94,35 @@ const createPaymentIntent = async (req, res) => {
   });
 };
 
+const retriveAccountDetails = async (req, res) => {
+  const { accountID } = req.body;
+  const accountDetails = await stripe.accounts.retrieve(accountID);
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: "Account details retrive successfully!",
+    data: accountDetails,
+  });
+}
+
+const generateAccountLinks = async (req, res) => {
+  const { accountID } = req.body;
+  const accountDetails = await stripe.accountLinks.create({
+    account: accountID,
+    refresh_url: 'https://example.com/reauth',
+    return_url: 'https://example.com/return',
+    type: 'account_onboarding',
+  });
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: "Account details retrive successfully!",
+    data: accountDetails,
+  });
+}
+
 module.exports = {
   createTransaction,
   getTransactionDoneByUser,
   createPaymentIntent,
+  retriveAccountDetails,
+  generateAccountLinks
 };

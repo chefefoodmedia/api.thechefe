@@ -42,5 +42,5 @@ const RequestFoodSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+RequestFoodSchema.plugin(require("mongoose-autopopulate"));
 module.exports = mongoose.model("RequestFood", RequestFoodSchema);
