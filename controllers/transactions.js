@@ -65,12 +65,9 @@ const createPaymentIntent = async (req, res) => {
     amount: requestPost.amount * 100,
     currency: "eur",
     customer: customer.id,
-    automatic_payment_methods: {
-      enabled: true,
-    },
     application_fee_amount: 200,
     transfer_data: {
-      destination: 'acct_1Oc05uQepn2e0Z9W',
+      destination: requestPost.createdBy.account_id,
     },
     description:
       "Food request payment for " +
@@ -111,6 +108,9 @@ const generateAccountLinks = async (req, res) => {
     refresh_url: 'https://example.com/reauth',
     return_url: 'https://example.com/return',
     type: 'account_onboarding',
+    collection_options: {
+      fields: 'eventually_due',
+    },
   });
   res.status(StatusCodes.OK).json({
     success: true,
@@ -118,6 +118,21 @@ const generateAccountLinks = async (req, res) => {
     data: accountDetails,
   });
 }
+
+// const generateAccountLinks = async (req, res) => {
+//   const { accountID } = req.body;
+//   const accountDetails = await stripe.accountLinks.create({
+//     account: accountID,
+//     refresh_url: 'https://example.com/reauth',
+//     return_url: 'https://example.com/return',
+//     type: 'account_onboarding',
+//   });
+//   res.status(StatusCodes.OK).json({
+//     success: true,
+//     message: "Account details retrive successfully!",
+//     data: accountDetails,
+//   });
+// }
 
 module.exports = {
   createTransaction,

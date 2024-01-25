@@ -38,6 +38,7 @@ const PostSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+      autopopulate: true,
     },
     userDetails: {
       name: {

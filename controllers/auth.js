@@ -17,14 +17,21 @@ const register = async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) throw new BadRequestError("User already exists");
 
+  // const account = await stripe.accounts.create({
+  //   type: 'custom',
+  //   country: 'PT',
+  //   email: req.body.email,
+  //   capabilities: {
+  //     transfers: { requested: true },
+  //     card_payments: { requested: true },
+  //   },
+  //   business_type: 'individual',
+  // });
+
   const account = await stripe.accounts.create({
-    type: 'custom',
+    type: 'standard',
     country: 'PT',
     email: req.body.email,
-    capabilities: {
-      transfers: { requested: true },
-      card_payments: { requested: true },
-    },
     business_type: 'individual',
   });
   user = await User.create({ ...req.body, account_id: account.id });
