@@ -35,6 +35,22 @@ const createTransaction = async (req, res) => {
     transactionResponse: transactionResponse,
   });
 
+  //set transaction status to request food
+  //check if payment is successful then set status to done else set status to failed
+  if (transactionResponse.status === "succeeded") {
+    await RequestFood.findByIdAndUpdate(
+      foodRequestID,
+      { status: "done" },
+      options
+    );
+  } else {
+    await RequestFood.findByIdAndUpdate(
+      foodRequestID,
+      { status: "failed" },
+      options
+    );
+  }
+
   res.status(StatusCodes.CREATED).json({ transaction });
 };
 
@@ -99,17 +115,17 @@ const retriveAccountDetails = async (req, res) => {
     message: "Account details retrive successfully!",
     data: accountDetails,
   });
-}
+};
 
 const generateAccountLinks = async (req, res) => {
   const { accountID } = req.body;
   const accountDetails = await stripe.accountLinks.create({
     account: accountID,
-    refresh_url: 'https://example.com/reauth',
-    return_url: 'https://example.com/return',
-    type: 'account_onboarding',
+    refresh_url: "http://localhost:3000/#",
+    return_url: "http://localhost:3000/#",
+    type: "account_onboarding",
     collection_options: {
-      fields: 'eventually_due',
+      fields: "eventually_due",
     },
   });
   res.status(StatusCodes.OK).json({
@@ -117,27 +133,27 @@ const generateAccountLinks = async (req, res) => {
     message: "Account details retrive successfully!",
     data: accountDetails,
   });
-}
+};
 
 // const generateAccountLinks = async (req, res) => {
 //   const { accountID } = req.body;
 //   const accountDetails = await stripe.accountLinks.create({
 //     account: accountID,
-//     refresh_url: 'https://example.com/reauth',
-//     return_url: 'https://example.com/return',
-//     type: 'account_onboarding',
+//     refresh_url: "https://example.com/reauth",
+//     return_url: "https://example.com/return",
+//     type: "account_onboarding",
 //   });
 //   res.status(StatusCodes.OK).json({
 //     success: true,
 //     message: "Account details retrive successfully!",
 //     data: accountDetails,
 //   });
-// }
+// };
 
 module.exports = {
   createTransaction,
   getTransactionDoneByUser,
   createPaymentIntent,
   retriveAccountDetails,
-  generateAccountLinks
+  generateAccountLinks,
 };

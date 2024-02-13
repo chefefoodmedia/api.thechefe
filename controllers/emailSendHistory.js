@@ -48,6 +48,27 @@ const sendForgotPasswordEmail = async (userId) => {
   sendMail(templateDetails, user, htmlTemplate);
 };
 
+const sendFoodRequesOwnerRequestEmail = async (foodRequest) => {
+  let templateDetails = await getEmailTemplateByName("Food-Request-Owner");
+  templateDetails.subject = templateDetails.subject.replace(
+    /###UserName/g,
+    foodRequest.createdByUserName
+  );
+  const htmlTemplate = await getFoodHtmlTemplate(templateDetails, foodRequest);
+  sendMail(templateDetails, foodRequest.postOwner, htmlTemplate);
+};
+
+const sendFoodRequesRequesterRequestEmail = async (foodRequest) => {
+  const templateDetails = await getEmailTemplateByName(
+    "Food-Request-Requester"
+  );
+  const htmlTemplate = await getFoodRequestHtmlTemplate(
+    templateDetails,
+    foodRequest
+  );
+  sendMail(templateDetails, foodRequest.createdBy, htmlTemplate);
+};
+
 //send email
 const sendMail = async (templateDetails, user, body) => {
   const mailOptions = {
@@ -127,8 +148,72 @@ const getHtmlTemplate = async (templateDetails, user) => {
   return htmlTemplate;
 };
 
+//get food request template
+const getFoodHtmlTemplate = async (templateDetails, foodrequest) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserNameRequest/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###UserNameOwner/g,
+    foodrequest.postOwner.name
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###RequestMessage/g,
+    foodrequest.requestMessage
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostMessage/g,
+    foodrequest.postID.caption
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostDetails/g,
+    foodrequest.postID.location
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostImage/g,
+    foodrequest.postID.image.src ? foodrequest.postID.image.src : ""
+  );
+  return htmlTemplate;
+};
+
+const getFoodRequestHtmlTemplate = async (templateDetails, foodrequest) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserName/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(/###Owner/g, foodrequest.postOwner.name);
+  htmlTemplate = htmlTemplate.replace(
+    /###PostMessage/g,
+    foodrequest.postID.caption
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostDetails/g,
+    foodrequest.postID.location
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostImage/g,
+    foodrequest.postID.image.src ? foodrequest.postID.image.src : ""
+  );
+  return htmlTemplate;
+};
+
 module.exports = {
   sendSignUpEmail,
   sendForgotPasswordEmail,
   sendCEOSignUpEmail,
+  sendFoodRequesOwnerRequestEmail,
+  sendFoodRequesRequesterRequestEmail,
 };

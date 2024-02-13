@@ -3,6 +3,10 @@ const { StatusCodes } = require("http-status-codes");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const RequestFood = require("../models/RequestFood");
+const {
+  sendFoodRequesOwnerRequestEmail,
+  sendFoodRequesRequesterRequestEmail,
+} = require("./emailSendHistory");
 
 const options = { new: true, runValidators: true };
 
@@ -24,6 +28,8 @@ const createRequestFood = async (req, res) => {
     postOwnerImage: post.userDetails.image,
   });
   res.status(StatusCodes.CREATED).json({ requestFood });
+  sendFoodRequesOwnerRequestEmail(requestFood);
+  sendFoodRequesRequesterRequestEmail(requestFood);
   console.log(requestFood);
 };
 
