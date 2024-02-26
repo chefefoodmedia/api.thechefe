@@ -4,6 +4,10 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 const RequestFood = require("../models/RequestFood");
 const Transaction = require("../models/Transaction");
+const {
+  PaymentSuccessfulReceiverRequestEmail,
+  PaymentSuccessfulOwnerRequestEmail,
+} = require("./emailSendHistory");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -37,16 +41,27 @@ const createTransaction = async (req, res) => {
 
   //set transaction status to request food
   //check if payment is successful then set status to done else set status to failed
-  if (transactionResponse.status === "succeeded") {
-    await RequestFood.findByIdAndUpdate(
+  if (transactionResponse.paymentIntent.status === "succeeded") {
+    let foodRequest = await RequestFood.findByIdAndUpdate(
       foodRequestID,
-      { status: "done" },
+      { requestStatus: "done" },
       options
     );
+    PaymentSuccessfulReceiverRequestEmail(foodRequest, {
+      id: transactionID,
+      amount: transactionResponse.paymentIntent.amount / 100,
+      date: new Date(transactionResponse.paymentIntent.created),
+    });
+    PaymentSuccessfulOwnerRequestEmail(foodRequest, {
+      id: transactionID,
+      amount: transactionResponse.paymentIntent.amount / 100,
+      finalAmount: transactionResponse.paymentIntent.amount / 100 - 2,
+      date: new Date(transactionResponse.paymentIntent.created),
+    });
   } else {
     await RequestFood.findByIdAndUpdate(
       foodRequestID,
-      { status: "failed" },
+      { requestStatus: "failed" },
       options
     );
   }
