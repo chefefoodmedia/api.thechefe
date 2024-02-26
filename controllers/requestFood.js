@@ -36,9 +36,9 @@ const createRequestFood = async (req, res) => {
 const getFoodRequestDoneByUser = async (req, res) => {
   const { id } = req.user;
   //get all request food done by user with full details of post
-  const requestFood = await RequestFood.find({ createdBy: id }).populate(
-    "postID"
-  );
+  const requestFood = await RequestFood.find({ createdBy: id })
+    .populate("postID")
+    .sort({ createdAt: -1 });
   res.status(StatusCodes.OK).json({ requestFood });
 };
 
