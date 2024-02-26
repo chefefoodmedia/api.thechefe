@@ -136,8 +136,8 @@ const generateAccountLinks = async (req, res) => {
   const { accountID } = req.body;
   const accountDetails = await stripe.accountLinks.create({
     account: accountID,
-    refresh_url: "http://localhost:3000/#",
-    return_url: "http://localhost:3000/#",
+    refresh_url: "https://app-thechefe.onrender.com/#",
+    return_url: "https://app-thechefe.onrender.com/#",
     type: "account_onboarding",
     collection_options: {
       fields: "eventually_due",
