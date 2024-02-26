@@ -46,7 +46,6 @@ const createPost = async (req, res) => {
     userDetails: { name: user.name, image: user.profileImage },
   });
   res.status(StatusCodes.CREATED).json({ post });
-  console.log(post);
 };
 
 const getPosts = async (req, res) => {

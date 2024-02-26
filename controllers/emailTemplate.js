@@ -18,7 +18,6 @@ const createEmailTemplate = async (req, res) => {
     createdByImage: user.profileImage,
   });
   res.status(StatusCodes.CREATED).json({ emailTemplate });
-  console.log(emailTemplate);
 };
 const getEmailTemplate = async (req, res) => {
   const { id, name } = req.body;

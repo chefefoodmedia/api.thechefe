@@ -48,6 +48,63 @@ const sendForgotPasswordEmail = async (userId) => {
   sendMail(templateDetails, user, htmlTemplate);
 };
 
+const sendFoodRequesOwnerRequestEmail = async (foodRequest) => {
+  let templateDetails = await getEmailTemplateByName("Food-Request-Owner");
+  templateDetails.subject = templateDetails.subject.replace(
+    /###UserName/g,
+    foodRequest.createdByUserName
+  );
+  const htmlTemplate = await getFoodHtmlTemplate(templateDetails, foodRequest);
+  sendMail(templateDetails, foodRequest.postOwner, htmlTemplate);
+};
+
+const sendFoodRequesRequesterRequestEmail = async (foodRequest) => {
+  const templateDetails = await getEmailTemplateByName(
+    "Food-Request-Requester"
+  );
+  const htmlTemplate = await getFoodRequestHtmlTemplate(
+    templateDetails,
+    foodRequest
+  );
+  sendMail(templateDetails, foodRequest.createdBy, htmlTemplate);
+};
+
+const approveFoodRequestEmail = async (foodRequest) => {
+  const templateDetails = await getEmailTemplateByName("Approve-Food-Request");
+  const htmlTemplate = await approveFoodRequestHtmlTemplate(
+    templateDetails,
+    foodRequest
+  );
+  sendMail(templateDetails, foodRequest.createdBy, htmlTemplate);
+};
+
+const PaymentSuccessfulReceiverRequestEmail = async (
+  foodRequest,
+  transaction
+) => {
+  const templateDetails = await getEmailTemplateByName(
+    "Payment-Successful-Receiver"
+  );
+  const htmlTemplate = await paymentSuccessfullReceiverHtmlTemplate(
+    templateDetails,
+    foodRequest,
+    transaction
+  );
+  sendMail(templateDetails, foodRequest.createdBy, htmlTemplate);
+};
+
+const PaymentSuccessfulOwnerRequestEmail = async (foodRequest, transaction) => {
+  const templateDetails = await getEmailTemplateByName(
+    "Payment-Successful-Receiver-Owner"
+  );
+  const htmlTemplate = await paymentSuccessfullOwnerHtmlTemplate(
+    templateDetails,
+    foodRequest,
+    transaction
+  );
+  sendMail(templateDetails, foodRequest.postOwner, htmlTemplate);
+};
+
 //send email
 const sendMail = async (templateDetails, user, body) => {
   const mailOptions = {
@@ -107,7 +164,6 @@ const saveEmailSendHistory = async (
     sentAt: new Date(),
     user: user._id,
   });
-  console.log(emailSendHistory);
 };
 
 //get user by id
@@ -127,8 +183,153 @@ const getHtmlTemplate = async (templateDetails, user) => {
   return htmlTemplate;
 };
 
+//get food request template
+const getFoodHtmlTemplate = async (templateDetails, foodrequest) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserNameRequest/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###UserNameOwner/g,
+    foodrequest.postOwner.name
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###RequestMessage/g,
+    foodrequest.requestMessage
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostMessage/g,
+    foodrequest.postID.caption
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostDetails/g,
+    foodrequest.postID.location
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostImage/g,
+    foodrequest.postID.image.src ? foodrequest.postID.image.src : ""
+  );
+  return htmlTemplate;
+};
+
+const getFoodRequestHtmlTemplate = async (templateDetails, foodrequest) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserName/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(/###Owner/g, foodrequest.postOwner.name);
+  htmlTemplate = htmlTemplate.replace(
+    /###PostMessage/g,
+    foodrequest.postID.caption
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostDetails/g,
+    foodrequest.postID.location
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###PostImage/g,
+    foodrequest.postID.image.src ? foodrequest.postID.image.src : ""
+  );
+  return htmlTemplate;
+};
+
+const approveFoodRequestHtmlTemplate = async (templateDetails, foodrequest) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserName/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(/###Owner/g, foodrequest.postOwner.name);
+  htmlTemplate = htmlTemplate.replace(/###Amount/g, foodrequest.postID.amount);
+  return htmlTemplate;
+};
+
+const paymentSuccessfullReceiverHtmlTemplate = async (
+  templateDetails,
+  foodrequest,
+  transaction
+) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserName/g,
+    foodrequest.createdByUserName
+  );
+  htmlTemplate = htmlTemplate.replace(/###TransactionId/g, transaction.id);
+  htmlTemplate = htmlTemplate.replace(/###PaymentDate/g, transaction.date);
+  htmlTemplate = htmlTemplate.replace(
+    /###FoodDetailsDescription/g,
+    "Food sharing"
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###FoodProviderName/g,
+    foodrequest.postOwner.name
+  );
+  htmlTemplate = htmlTemplate.replace(/###Amount/g, transaction.amount);
+  return htmlTemplate;
+};
+
+const paymentSuccessfullOwnerHtmlTemplate = async (
+  templateDetails,
+  foodrequest,
+  transaction
+) => {
+  const readFile = util.promisify(fs.readFile);
+  let htmlTemplate = await readFile(
+    `./public/${templateDetails.htmlTemplate}`,
+    "utf8"
+  );
+
+  htmlTemplate = htmlTemplate.replace(
+    /###UserName/g,
+    foodrequest.postOwner.name
+  );
+  htmlTemplate = htmlTemplate.replace(/###TransactionId/g, transaction.id);
+  htmlTemplate = htmlTemplate.replace(/###PaymentDate/g, transaction.date);
+  htmlTemplate = htmlTemplate.replace(
+    /###FoodDetailsDescription/g,
+    "Food sharing"
+  );
+  htmlTemplate = htmlTemplate.replace(
+    /###FoodProviderName/g,
+    foodrequest.postOwner.name
+  );
+  htmlTemplate = htmlTemplate.replace(/###Amount/g, transaction.amount);
+  htmlTemplate = htmlTemplate.replace(
+    /###FinalAmount/g,
+    transaction.finalAmount
+  );
+  return htmlTemplate;
+};
+
 module.exports = {
   sendSignUpEmail,
   sendForgotPasswordEmail,
   sendCEOSignUpEmail,
+  sendFoodRequesOwnerRequestEmail,
+  sendFoodRequesRequesterRequestEmail,
+  approveFoodRequestEmail,
+  PaymentSuccessfulReceiverRequestEmail,
+  PaymentSuccessfulOwnerRequestEmail,
 };

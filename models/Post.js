@@ -38,6 +38,7 @@ const PostSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+      autopopulate: true,
     },
     userDetails: {
       name: {
@@ -98,5 +99,5 @@ const PostSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+PostSchema.plugin(require("mongoose-autopopulate"));
 module.exports = mongoose.model("Post", PostSchema);

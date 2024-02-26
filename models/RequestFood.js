@@ -6,11 +6,13 @@ const RequestFoodSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Post",
       required: true,
+      autopopulate: true,
     },
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+      autopopulate: true,
     },
     createdByUserName: {
       type: String,
@@ -31,6 +33,7 @@ const RequestFoodSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
+      autopopulate: true,
     },
     postOwnerUserName: {
       type: String,
@@ -42,5 +45,5 @@ const RequestFoodSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
+RequestFoodSchema.plugin(require("mongoose-autopopulate"));
 module.exports = mongoose.model("RequestFood", RequestFoodSchema);

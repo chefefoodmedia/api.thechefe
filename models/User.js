@@ -53,6 +53,14 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    isPaymentAccountLink:{
+      type: Boolean,
+      default: false
+    },
+    account_id:{
+      type: String,
+      maxlength: 100
+    }
   },
   { timestamps: true }
 );
